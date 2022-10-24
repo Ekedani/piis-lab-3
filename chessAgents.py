@@ -47,6 +47,11 @@ class ChessAgent:
 
         return material_score + mobility_score
 
+    @staticmethod
+    def isDraw(gameState):
+        return gameState.is_stalemate() or gameState.is_insufficient_material() or \
+               gameState.is_fivefold_repetition() or gameState.is_seventyfive_moves()
+
     def __init__(self, index=0, depth=2):
         self.index = int(index)
         self.depth = int(depth)
@@ -58,6 +63,16 @@ class NegamaxChessAgent(ChessAgent):
 
     def negamax(self):
         pass
+
+    def recursiveNegamax(self, gameState, depth, color):
+        if depth == 0:
+            return color * self.evaluationFunction(gameState)
+
+        legal_actions = gameState.legal_moves
+        value = float('-inf')
+
+        for action in legal_actions:
+            next_state = gameState
 
 
 class NegascoutChessAgent(ChessAgent):
