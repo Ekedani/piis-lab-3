@@ -31,9 +31,9 @@ class ChessAgent:
                          + q_weight * (wq - bq) + k_weight * (wk - bk)
 
         # Mobility
-        mobility_1 = len(gameState.legal_moves)
+        mobility_1 = gameState.legal_moves.count()
         gameState.push(chess.Move.null())
-        mobility_2 = len(gameState.legal_moves)
+        mobility_2 = gameState.legal_moves.count()
         gameState.pop()
         if gameState.turn:
             # White
@@ -42,7 +42,7 @@ class ChessAgent:
             # Black
             mobility = mobility_1 - mobility_2
 
-        mobility_weight = 1
+        mobility_weight = 0.2
         mobility_score = mobility * mobility_weight
 
         return material_score + mobility_score
@@ -59,20 +59,46 @@ class ChessAgent:
 
 class NegamaxChessAgent(ChessAgent):
     def getAction(self):
-        pass
+        def negamax(gameState, depth=self.depth, color=-1):
+            if gameState.is_checkmate():
+                return None
 
-    def negamax(self):
-        pass
+            # Depth = 0 or is terminal state
+            if depth == 0 or self.isDraw(gameState):
+                return None
 
-    def recursiveNegamax(self, gameState, depth, color):
-        if depth == 0:
-            return color * self.evaluationFunction(gameState)
+            legal_actions = gameState.legal_moves
+            best_score = float('-inf')
+            best_action = None
 
-        legal_actions = gameState.legal_moves
-        value = float('-inf')
+            for action in legal_actions:
+                gameState.push(action)
+                score = -recursiveNegamax(gameState, depth - 1, -color)
+                if score > best_score:
+                    best_score = score
+                    best_action = action
+                gameState.pop(action)
+            return best_action
 
-        for action in legal_actions:
-            next_state = gameState
+        def recursiveNegamax(gameState, depth, color):
+            if gameState.is_checkmate():
+                # Unlike pacman situation we have not better/worse defeat/win here
+                return color * float('inf')
+
+            # Depth = 0 or is terminal state
+            if depth == 0 or self.isDraw(gameState):
+                return color * self.evaluationFunction(gameState)
+
+            legal_actions = gameState.legal_moves
+            best_score = float('-inf')
+
+            for action in legal_actions:
+                gameState.push(action)
+                score = -recursiveNegamax(gameState, depth - 1, -color)
+                best_score = max(best_score, score)
+                gameState.pop(action)
+
+            return best_score
 
 
 class NegascoutChessAgent(ChessAgent):
