@@ -30,7 +30,22 @@ class ChessAgent:
         material_score = p_weight * (wp - bp) + n_weight * (wn - bn) + b_weight * (wb - bb) + r_weight * (wr - br) \
                          + q_weight * (wq - bq) + k_weight * (wk - bk)
 
-        return material_score
+        # Mobility
+        mobility_1 = len(gameState.legal_moves)
+        gameState.push(chess.Move.null())
+        mobility_2 = len(gameState.legal_moves)
+        gameState.pop()
+        if gameState.turn:
+            # White
+            mobility = mobility_2 - mobility_1
+        else:
+            # Black
+            mobility = mobility_1 - mobility_2
+
+        mobility_weight = 1
+        mobility_score = mobility * mobility_weight
+
+        return material_score + mobility_score
 
     def __init__(self, index=0, depth=2):
         self.index = int(index)
