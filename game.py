@@ -3,7 +3,7 @@ import chessAgents
 
 
 class Game:
-    def __init__(self, player, ai, color):
+    def __init__(self, player, ai, p_color):
         # Creating new chess board
         self.gameState = chess.Board()
 
@@ -19,20 +19,24 @@ class Game:
         else:
             raise Exception("Nonexistent AI agent")
 
-        self.color = color
+        self.p_color = p_color
+
+    def nextMove(self):
+        turn = self.gameState.turn
+        if turn == self.p_color:
+            self.makePlayerMove()
+        else:
+            self.makeAiMove()
 
     def makeAiMove(self):
-        ai = self.ai()
-        action = ai.getAction(self.gameState.copy())
+        agent = self.ai()
+        action = agent.getAction(self.gameState.copy())
         self.gameState.push(action)
 
     def makePlayerMove(self):
-        player = self.player()
-        action = player.getAction(self.gameState.copy())
+        agent = self.player()
+        action = agent.getAction(self.gameState.copy())
         self.gameState.push(action)
-
-    def makeMove(self):
-        pass
 
     def isFinished(self):
         return self.gameState.is_stalemate() or self.gameState.is_insufficient_material() or \
@@ -42,10 +46,10 @@ class Game:
 
 player = 'rofl'
 ai = 'ngmax'
-color = 1
+p_color = 1
 
-game = Game(player, ai, color)
+game = Game(player, ai, p_color)
 print(game)
 
 while not game.isFinished():
-    game.makeMove()
+    game.nextMove()
