@@ -7,7 +7,8 @@ class Game:
         # Creating new chess board
         self.gameState = chess.Board()
 
-        self.player = player
+        # Selecting player agent
+        self.player = chessAgents.ConsoleAgent
 
         # Selecting AI agent
         if ai == 'ngmax':
@@ -52,4 +53,5 @@ game = Game(player, ai, p_color)
 print(game)
 
 while not game.isFinished():
+    print(game.gameState)
     game.nextMove()

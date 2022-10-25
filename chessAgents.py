@@ -2,8 +2,7 @@ import chess
 
 
 class ChessAgent:
-    def __init__(self, index=0, depth=2):
-        self.index = int(index)
+    def __init__(self, depth=2):
         self.depth = int(depth)
 
     @staticmethod
@@ -41,10 +40,10 @@ class ChessAgent:
         gameState.pop()
         if gameState.turn:
             # White
-            mobility = mobility_2 - mobility_1
+            mobility = mobility_1 - mobility_2
         else:
             # Black
-            mobility = mobility_1 - mobility_2
+            mobility = mobility_2 - mobility_1
 
         mobility_weight = 0.2
         mobility_score = mobility * mobility_weight
@@ -114,3 +113,18 @@ class PvsChessAgent(ChessAgent):
 
     def pvs(self):
         pass
+
+
+class ConsoleAgent:
+    @staticmethod
+    def getAction(gameState: chess.Board):
+        legal_actions = gameState.legal_moves
+        print('Input your move: ', legal_actions)
+        action = gameState.parse_san(input())
+        print(action in legal_actions)
+        print(legal_actions)
+        while action not in legal_actions:
+            print('Invalid move. Try again:')
+            action = gameState.parse_san(input())
+
+        return action
