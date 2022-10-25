@@ -2,8 +2,12 @@ import chess
 
 
 class ChessAgent:
+    def __init__(self, index=0, depth=2):
+        self.index = int(index)
+        self.depth = int(depth)
+
     @staticmethod
-    def evaluationFunction(gameState):
+    def evaluationFunction(gameState: chess.Board):
         # Figures num
         wp = len(gameState.pieces(chess.PAWN, chess.WHITE))
         bp = len(gameState.pieces(chess.PAWN, chess.BLACK))
@@ -48,61 +52,56 @@ class ChessAgent:
         return material_score + mobility_score
 
     @staticmethod
-    def isDraw(gameState):
+    def isDraw(gameState: chess.Board):
         return gameState.is_stalemate() or gameState.is_insufficient_material() or \
                gameState.is_fivefold_repetition() or gameState.is_seventyfive_moves()
 
-    def __init__(self, index=0, depth=2):
-        self.index = int(index)
-        self.depth = int(depth)
-
 
 class NegamaxChessAgent(ChessAgent):
-    def getAction(self):
-        def negamax(gameState, depth=self.depth, color=-1):
-            if gameState.is_checkmate():
+    def getAction(self, gameState: chess.Board):
+        def negamax(state: chess.Board, depth=self.depth, color=-1):
+            if state.is_checkmate():
                 return None
 
-            # Depth = 0 or is terminal state
-            if depth == 0 or self.isDraw(gameState):
+            if depth == 0 or self.isDraw(state):
                 return None
 
-            legal_actions = gameState.legal_moves
+            legal_actions = state.legal_moves
             best_score = float('-inf')
             best_action = None
 
             for action in legal_actions:
-                gameState.push(action)
-                score = -recursiveNegamax(gameState, depth - 1, -color)
+                state.push(action)
+                score = -recursiveNegamax(state, depth - 1, -color)
                 if score > best_score:
                     best_score = score
                     best_action = action
-                gameState.pop(action)
+                state.pop()
             return best_action
 
-        def recursiveNegamax(gameState, depth, color):
-            if gameState.is_checkmate():
-                # Unlike pacman situation we have not better/worse defeat/win here
+        def recursiveNegamax(state: chess.Board, depth, color):
+            if state.is_checkmate():
                 return color * float('inf')
 
-            # Depth = 0 or is terminal state
-            if depth == 0 or self.isDraw(gameState):
-                return color * self.evaluationFunction(gameState)
+            if depth == 0 or self.isDraw(state):
+                return color * self.evaluationFunction(state)
 
-            legal_actions = gameState.legal_moves
+            legal_actions = state.legal_moves
             best_score = float('-inf')
 
             for action in legal_actions:
-                gameState.push(action)
-                score = -recursiveNegamax(gameState, depth - 1, -color)
+                state.push(action)
+                score = -recursiveNegamax(state, depth - 1, -color)
                 best_score = max(best_score, score)
-                gameState.pop(action)
+                state.pop()
 
             return best_score
 
+        return negamax(gameState)
+
 
 class NegascoutChessAgent(ChessAgent):
-    def getAction(self):
+    def getAction(self, gameState: chess.Board):
         pass
 
     def negascout(self):
@@ -110,7 +109,7 @@ class NegascoutChessAgent(ChessAgent):
 
 
 class PvsChessAgent(ChessAgent):
-    def getAction(self):
+    def getAction(self, gameState: chess.Board):
         pass
 
     def pvs(self):
