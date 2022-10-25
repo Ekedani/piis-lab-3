@@ -7,7 +7,7 @@ class ChessAgent:
 
     @staticmethod
     def evaluationFunction(gameState: chess.Board):
-        # Figures num
+        # Material
         wp = len(gameState.pieces(chess.PAWN, chess.WHITE))
         bp = len(gameState.pieces(chess.PAWN, chess.BLACK))
         wn = len(gameState.pieces(chess.KNIGHT, chess.WHITE))
@@ -21,7 +21,6 @@ class ChessAgent:
         wk = len(gameState.pieces(chess.KING, chess.WHITE))
         bk = len(gameState.pieces(chess.KING, chess.BLACK))
 
-        # Figures importance
         p_weight = 10
         n_weight = 100
         b_weight = 300
@@ -29,7 +28,6 @@ class ChessAgent:
         q_weight = 1000
         k_weight = 30000
 
-        # The more important figures - the better position is
         material_score = p_weight * (wp - bp) + n_weight * (wn - bn) + b_weight * (wb - bb) + r_weight * (wr - br) \
                          + q_weight * (wq - bq) + k_weight * (wk - bk)
 
@@ -39,12 +37,9 @@ class ChessAgent:
         mobility_2 = gameState.legal_moves.count()
         gameState.pop()
         if gameState.turn:
-            # White
             mobility = mobility_1 - mobility_2
         else:
-            # Black
             mobility = mobility_2 - mobility_1
-
         mobility_weight = 0.2
         mobility_score = mobility * mobility_weight
 
