@@ -2,7 +2,7 @@ import chess
 
 
 class ChessAgent:
-    def __init__(self, depth=2):
+    def __init__(self, depth=3):
         self.depth = int(depth)
 
     @staticmethod
@@ -97,18 +97,70 @@ class NegamaxChessAgent(ChessAgent):
 
 class NegascoutChessAgent(ChessAgent):
     def getAction(self, gameState: chess.Board):
-        pass
+        def negascout(state: chess.Board, color, depth=self.depth):
+            if state.is_checkmate():
+                return None
 
-    def negascout(self):
-        pass
+            if depth == 0 or self.isDraw(state):
+                return None
+
+            legal_actions = state.legal_moves
+            best_score = float('-inf')
+            best_action = None
+
+            return best_action
+
+        def recursiveNegascout(state: chess.Board, color, depth):
+            if state.is_checkmate():
+                return color * float('inf')
+
+            if depth == 0 or self.isDraw(state):
+                return color * self.evaluationFunction(state)
+
+            legal_actions = state.legal_moves
+            best_score = float('-inf')
+
+            for action in legal_actions:
+                state.push(action)
+
+            return best_score
+
+        color = 1 if gameState.turn else -1
+        return negascout(gameState, color=color)
 
 
 class PvsChessAgent(ChessAgent):
     def getAction(self, gameState: chess.Board):
-        pass
+        def pvs(state: chess.Board, color, depth=self.depth):
+            if state.is_checkmate():
+                return None
 
-    def pvs(self):
-        pass
+            if depth == 0 or self.isDraw(state):
+                return None
+
+            legal_actions = state.legal_moves
+            best_score = float('-inf')
+            best_action = None
+
+            return best_action
+
+        def recursivePvs(state: chess.Board, color, depth):
+            if state.is_checkmate():
+                return color * float('inf')
+
+            if depth == 0 or self.isDraw(state):
+                return color * self.evaluationFunction(state)
+
+            legal_actions = state.legal_moves
+            best_score = float('-inf')
+
+            for action in legal_actions:
+                state.push(action)
+
+            return best_score
+
+        color = 1 if gameState.turn else -1
+        return pvs(gameState, color=color)
 
 
 class ConsoleAgent:
