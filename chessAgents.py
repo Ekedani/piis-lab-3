@@ -58,7 +58,7 @@ class ChessAgent:
 
 class NegamaxChessAgent(ChessAgent):
     def getAction(self, gameState: chess.Board):
-        def negamax(state: chess.Board, depth=self.depth, color=-1):
+        def negamax(state: chess.Board, color, depth=self.depth):
             if state.is_checkmate():
                 return None
 
@@ -71,14 +71,14 @@ class NegamaxChessAgent(ChessAgent):
 
             for action in legal_actions:
                 state.push(action)
-                score = -recursiveNegamax(state, depth - 1, -color)
+                score = -recursiveNegamax(state, -color, depth - 1)
                 if score > best_score:
                     best_score = score
                     best_action = action
                 state.pop()
             return best_action
 
-        def recursiveNegamax(state: chess.Board, depth, color):
+        def recursiveNegamax(state: chess.Board, color, depth):
             if state.is_checkmate():
                 return color * float('inf')
 
@@ -90,13 +90,14 @@ class NegamaxChessAgent(ChessAgent):
 
             for action in legal_actions:
                 state.push(action)
-                score = -recursiveNegamax(state, depth - 1, -color)
+                score = -recursiveNegamax(state, -color, depth - 1)
                 best_score = max(best_score, score)
                 state.pop()
 
             return best_score
 
-        return negamax(gameState)
+        color = 1 if gameState.turn else -1
+        return negamax(gameState, color=color)
 
 
 class NegascoutChessAgent(ChessAgent):
