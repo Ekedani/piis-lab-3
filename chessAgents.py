@@ -110,7 +110,7 @@ class NegascoutChessAgent(ChessAgent):
 
             return best_action
 
-        def recursiveNegascout(state: chess.Board, color, depth):
+        def recursiveNegascout(state: chess.Board, color, depth, alpha, beta):
             if state.is_checkmate():
                 return color * float('inf')
 
@@ -118,12 +118,12 @@ class NegascoutChessAgent(ChessAgent):
                 return color * self.evaluationFunction(state)
 
             legal_actions = state.legal_moves
-            best_score = float('-inf')
-
+            a = alpha
+            b = beta
             for action in legal_actions:
                 state.push(action)
 
-            return best_score
+            return a
 
         color = 1 if gameState.turn else -1
         return negascout(gameState, color=color)

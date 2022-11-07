@@ -8,7 +8,7 @@ class Game:
         self.gameState = chess.Board()
 
         # Selecting player agent
-        self.player = chessAgents.ConsoleAgent
+        self.player = chessAgents.NegamaxChessAgent
 
         # Selecting AI agent
         if ai == 'ngmax':
@@ -18,7 +18,7 @@ class Game:
         elif ai == 'pvs':
             self.ai = chessAgents.PvsChessAgent
         else:
-            raise Exception("Nonexistent AI agent")
+            raise Exception("Nonexistent agent")
 
         self.p_color = p_color
 
