@@ -1,7 +1,6 @@
 import chess
 import chessAgents
 
-
 class Game:
     def __init__(self, player, ai, p_color):
         # Creating new chess board
@@ -11,9 +10,9 @@ class Game:
         self.player = chessAgents.NegamaxChessAgent
 
         # Selecting AI agent
-        if ai == 'ngmax':
+        if ai == 'negamax':
             self.ai = chessAgents.NegamaxChessAgent
-        elif ai == 'ngscout':
+        elif ai == 'negascout':
             self.ai = chessAgents.NegascoutChessAgent
         elif ai == 'pvs':
             self.ai = chessAgents.PvsChessAgent
@@ -45,13 +44,11 @@ class Game:
                self.gameState.is_checkmate()
 
 
-player = 'rofl'
-ai = 'ngmax'
+player = 'console'
+ai = 'negamax'
 p_color = 1
 
 game = Game(player, ai, p_color)
-print(game)
-
 while not game.isFinished():
     print(game.gameState)
     game.nextMove()
