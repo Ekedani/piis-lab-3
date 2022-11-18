@@ -7,7 +7,16 @@ class Game:
         self.gameState = chess.Board()
 
         # Selecting player agent
-        self.player = chessAgents.NegamaxChessAgent
+        if player == 'negamax':
+            self.player = chessAgents.NegamaxChessAgent
+        elif ai == 'negascout':
+            self.player = chessAgents.NegascoutChessAgent
+        elif ai == 'pvs':
+            self.player = chessAgents.PvsChessAgent
+        elif player == 'console':
+            self.player = chessAgents.ConsoleAgent
+        else:
+            raise Exception("Nonexistent agent")
 
         # Selecting AI agent
         if ai == 'negamax':
@@ -29,22 +38,20 @@ class Game:
             self.makeAiMove()
 
     def makeAiMove(self):
-        agent = self.ai()
+        agent = self.ai(3)
         action = agent.getAction(self.gameState.copy())
         self.gameState.push(action)
 
     def makePlayerMove(self):
-        agent = self.player()
+        agent = self.player(1)
         action = agent.getAction(self.gameState.copy())
         self.gameState.push(action)
 
     def isFinished(self):
-        return self.gameState.is_stalemate() or self.gameState.is_insufficient_material() or \
-               self.gameState.is_fivefold_repetition() or self.gameState.is_seventyfive_moves() or \
-               self.gameState.is_checkmate()
+        return self.gameState.outcome() is not None
 
 
-player = 'console'
+player = 'negamax'
 ai = 'negamax'
 p_color = 1
 
@@ -52,3 +59,4 @@ game = Game(player, ai, p_color)
 while not game.isFinished():
     print(game.gameState)
     game.nextMove()
+print(game.gameState.outcome())
