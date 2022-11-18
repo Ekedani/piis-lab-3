@@ -7,6 +7,10 @@ class ChessAgent:
 
     @staticmethod
     def evaluateBoard(gameState: chess.Board):
+        """
+        A simple chess board evaluation function based on material and mobility
+        For detail information about it visit https://www.chessprogramming.org/Evaluation
+        """
         # Material
         wp = len(gameState.pieces(chess.PAWN, chess.WHITE))
         bp = len(gameState.pieces(chess.PAWN, chess.BLACK))
@@ -94,10 +98,7 @@ class NegamaxChessAgent(ChessAgent):
 class NegascoutChessAgent(ChessAgent):
     def getAction(self, gameState: chess.Board):
         def negascout(state: chess.Board, color, depth=self.depth):
-            if state.is_checkmate():
-                return None
-
-            if depth == 0 or self.isDraw(state):
+            if depth == 0 or state.outcome() is not None:
                 return None
 
             legal_actions = state.legal_moves
@@ -107,10 +108,7 @@ class NegascoutChessAgent(ChessAgent):
             return best_action
 
         def recursiveNegascout(state: chess.Board, color, depth, alpha, beta):
-            if state.is_checkmate():
-                return color * float('inf')
-
-            if depth == 0 or self.isDraw(state):
+            if depth == 0 or state.outcome() is not None:
                 return color * self.evaluateBoard(state)
 
             legal_actions = state.legal_moves
@@ -128,10 +126,7 @@ class NegascoutChessAgent(ChessAgent):
 class PvsChessAgent(ChessAgent):
     def getAction(self, gameState: chess.Board):
         def pvs(state: chess.Board, color, depth=self.depth):
-            if state.is_checkmate():
-                return None
-
-            if depth == 0 or self.isDraw(state):
+            if depth == 0 or state.outcome() is not None:
                 return None
 
             legal_actions = state.legal_moves
@@ -141,7 +136,7 @@ class PvsChessAgent(ChessAgent):
             return best_action
 
         def recursivePvs(state: chess.Board, color, depth):
-            if depth == 0 or self.isDraw(state):
+            if depth == 0 or state.outcome() is not None:
                 return color * self.evaluateBoard(state)
 
             legal_actions = state.legal_moves
