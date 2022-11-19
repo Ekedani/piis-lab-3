@@ -9,7 +9,7 @@ class ChessAgent:
     def evaluateBoard(gameState: chess.Board):
         """
         A simple chess board evaluation function based on material and mobility
-        For detail information about it visit https://www.chessprogramming.org/Evaluation
+        For detailed information about it visit https://www.chessprogramming.org/Evaluation
         """
         # Material
         wp = len(gameState.pieces(chess.PAWN, chess.WHITE))
@@ -77,7 +77,6 @@ class NegamaxChessAgent(ChessAgent):
 
         def recursiveNegamax(state: chess.Board, color, depth):
             if depth == 0 or state.outcome() is not None:
-                # who2Move * (materialScore + mobilityScore)
                 return color * self.evaluateBoard(state)
 
             legal_actions = state.legal_moves
@@ -125,33 +124,61 @@ class NegascoutChessAgent(ChessAgent):
 
 class PvsChessAgent(ChessAgent):
     def getAction(self, gameState: chess.Board):
-        def pvs(state: chess.Board, color, depth=self.depth):
+        def pvs(state: chess.Board, color, depth=self.depth, alpha=float('-inf'), beta=float('inf')):
             if depth == 0 or state.outcome() is not None:
                 return None
 
             legal_actions = state.legal_moves
-            best_score = float('-inf')
             best_action = None
+
+            b_search_pv = True
+            for action in legal_actions:
+                state.push(action)
+                if b_search_pv:
+                    score = -recursivePvs(state, -color, depth - 1, -beta, -alpha)
+                else:
+                    score = -recursivePvs(state, -color, depth - 1, -alpha - 1, -alpha)
+                    if score > alpha:
+                        score = -recursivePvs(state, -color, depth - 1, -beta, -alpha)
+                state.pop()
+                if score >= beta:
+                    return action
+                if score > alpha:
+                    alpha = score
+                    b_search_pv = False
+                    best_action = action
 
             return best_action
 
-        def recursivePvs(state: chess.Board, color, depth):
+        def recursivePvs(state: chess.Board, color, depth, alpha, beta):
             if depth == 0 or state.outcome() is not None:
                 return color * self.evaluateBoard(state)
 
             legal_actions = state.legal_moves
-            best_score = float('-inf')
+            b_search_pv = True
 
             for action in legal_actions:
                 state.push(action)
+                if b_search_pv:
+                    score = -recursivePvs(state, -color, depth - 1, -beta, -alpha)
+                else:
+                    score = -recursivePvs(state, -color, depth - 1, -alpha - 1, -alpha)
+                    if score > alpha:
+                        score = -recursivePvs(state, -color, depth - 1, -beta, -alpha)
+                state.pop()
+                if score >= beta:
+                    return beta
+                if score > alpha:
+                    alpha = score
+                    b_search_pv = False
 
-            return best_score
+            return alpha
 
         color = 1 if gameState.turn else -1
         return pvs(gameState, color=color)
 
 
-class ConsoleAgent:
+class ConsoleAgent(ChessAgent):
     @staticmethod
     def getAction(gameState: chess.Board):
         legal_actions = gameState.legal_moves
@@ -162,5 +189,4 @@ class ConsoleAgent:
         while action not in legal_actions:
             print('Invalid move. Try again:')
             action = gameState.parse_san(input())
-
         return action
