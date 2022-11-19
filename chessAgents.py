@@ -8,7 +8,7 @@ class ChessAgent:
     @staticmethod
     def evaluateBoard(gameState: chess.Board):
         """
-        A simple chess board evaluation function based on material and mobility
+        A simple chess board evaluation function based on material and mobility.
         For detailed information about it visit https://www.chessprogramming.org/Evaluation
         """
         # Material
@@ -57,6 +57,11 @@ class ChessAgent:
 
 
 class NegamaxChessAgent(ChessAgent):
+    """
+    An implementation of chess agent based on Negamax algorithm.
+    For detailed information about it (and pseudocode) visit https://www.chessprogramming.org/Negamax
+    """
+
     def getAction(self, gameState: chess.Board):
         def negamax(state: chess.Board, color, depth=self.depth):
             if depth == 0 or state.outcome() is not None:
@@ -96,13 +101,30 @@ class NegamaxChessAgent(ChessAgent):
 
 class NegascoutChessAgent(ChessAgent):
     def getAction(self, gameState: chess.Board):
-        def negascout(state: chess.Board, color, depth=self.depth):
+        def negascout(state: chess.Board, color, depth=self.depth, alpha=float('-inf'), beta=float('inf')):
             if depth == 0 or state.outcome() is not None:
                 return None
 
             legal_actions = state.legal_moves
-            best_score = float('-inf')
+            a = alpha
+            b = beta
+            is_first_move = True
             best_action = None
+
+            for action in legal_actions:
+                state.push(action)
+                score = recursiveNegascout(state, -color, depth - 1, -b, -alpha)
+                if a < score < b and depth <= 2 and not is_first_move:
+                    a = -recursiveNegascout(state, -color, depth - 1, -beta, -score)
+                state.pop()
+                if score > a:
+                    a = score
+                    best_action = action
+
+                if a >= beta:
+                    return action
+                b = a + 1
+                is_first_move = False
 
             return best_action
 
@@ -113,8 +135,19 @@ class NegascoutChessAgent(ChessAgent):
             legal_actions = state.legal_moves
             a = alpha
             b = beta
+            is_first_move = True
+
             for action in legal_actions:
                 state.push(action)
+                score = recursiveNegascout(state, -color, depth - 1, -b, -alpha)
+                if a < score < b and depth <= 2 and not is_first_move:
+                    a = -recursiveNegascout(state, -color, depth - 1, -beta, -score)
+                state.pop()
+                a = max(a, score)
+                if a >= beta:
+                    return a
+                b = a + 1
+                is_first_move = False
 
             return a
 
@@ -123,6 +156,11 @@ class NegascoutChessAgent(ChessAgent):
 
 
 class PvsChessAgent(ChessAgent):
+    """
+    An implementation of chess agent based on Principal variation search algorithm.
+    For detailed information about it (and pseudocode) visit https://www.chessprogramming.org/Principal_Variation_Search
+    """
+
     def getAction(self, gameState: chess.Board):
         def pvs(state: chess.Board, color, depth=self.depth, alpha=float('-inf'), beta=float('inf')):
             if depth == 0 or state.outcome() is not None:
@@ -179,8 +217,7 @@ class PvsChessAgent(ChessAgent):
 
 
 class ConsoleAgent(ChessAgent):
-    @staticmethod
-    def getAction(gameState: chess.Board):
+    def getAction(self, gameState: chess.Board):
         legal_actions = gameState.legal_moves
         print('Input your move: ', legal_actions)
         action = gameState.parse_san(input())

@@ -44,7 +44,7 @@ class Game:
         self.gameState.push(action)
 
     def makePlayerMove(self):
-        agent = self.player(3)
+        agent = self.player(1)
         action = agent.getAction(self.gameState.copy())
         self.gameState.push(action)
 
@@ -52,7 +52,7 @@ class Game:
         return self.gameState.outcome() is not None
 
 
-player = 'pvs'
+player = 'negascout'
 ai = 'negamax'
 p_color = 1
 
