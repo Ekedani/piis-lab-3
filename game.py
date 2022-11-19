@@ -17,7 +17,7 @@ class Game:
         elif player == 'console':
             self.player = chessAgents.ConsoleAgent
         else:
-            raise Exception("Nonexistent agent")
+            self.player = chessAgents.ConsoleAgent
 
         # Selecting AI agent
         if ai == 'negamax':
@@ -27,7 +27,7 @@ class Game:
         elif ai == 'pvs':
             self.ai = chessAgents.PvsChessAgent
         else:
-            raise Exception("Nonexistent agent")
+            self.ai = chessAgents.NegamaxChessAgent
 
         self.p_color = p_color
 
@@ -52,13 +52,14 @@ class Game:
         return self.gameState.outcome() is not None
 
 
-player = 'negascout'
+player = 'console'
 ai = 'negamax'
 p_color = 1
 
 game = Game(player, ai, p_color)
 while not game.isFinished():
-    print('===============')
     print(game.gameState)
     game.nextMove()
+    print('===============')
+print(game.gameState)
 print(game.gameState.outcome())

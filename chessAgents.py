@@ -1,9 +1,22 @@
+from abc import abstractmethod
+
 import chess
 
 
 class ChessAgent:
     def __init__(self, depth=3):
         self.depth = int(depth)
+
+    @abstractmethod
+    def getAction(self, state):
+        """
+        This method is used in the derived classes to get a move on the chessboard.
+
+        In the cases of implemented algorithms, contains two functions: the entry function, which returns the action
+        and its recursive version, which returns the state evaluation. This way of implementation was chosen so as
+        not to return actions when they are not needed and because of the simplicity of its debugging
+        """
+        raise NotImplementedError()
 
     @staticmethod
     def evaluateBoard(gameState: chess.Board):
@@ -100,6 +113,11 @@ class NegamaxChessAgent(ChessAgent):
 
 
 class NegascoutChessAgent(ChessAgent):
+    """
+    An implementation of chess agent based on NegaScout algorithm.
+    For detailed information about it (and pseudocode) visit https://www.chessprogramming.org/NegaScout
+    """
+
     def getAction(self, gameState: chess.Board):
         def negascout(state: chess.Board, color, depth=self.depth, alpha=float('-inf'), beta=float('inf')):
             if depth == 0 or state.outcome() is not None:
@@ -218,12 +236,13 @@ class PvsChessAgent(ChessAgent):
 
 class ConsoleAgent(ChessAgent):
     def getAction(self, gameState: chess.Board):
-        legal_actions = gameState.legal_moves
-        print('Input your move: ', legal_actions)
-        action = gameState.parse_san(input())
-        print(action in legal_actions)
-        print(legal_actions)
-        while action not in legal_actions:
-            print('Invalid move. Try again:')
-            action = gameState.parse_san(input())
+        while True:
+            try:
+                legal_actions = gameState.legal_moves
+                print('Select your move: ', legal_actions)
+                action = gameState.parse_san(input())
+            except ValueError:
+                print('Invalid move. Try again')
+            else:
+                break
         return action
