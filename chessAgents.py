@@ -239,7 +239,9 @@ class ConsoleChessAgent(ChessAgent):
         while True:
             try:
                 legal_actions = gameState.legal_moves
-                print('Select your move: ', legal_actions)
+                string_actions = legal_actions.__repr__()
+                sans = string_actions[string_actions.find('(') + 1 : string_actions.find(')')]
+                print('Select your move:', sans)
                 action = gameState.parse_san(input())
             except ValueError:
                 print('Invalid move. Try again')

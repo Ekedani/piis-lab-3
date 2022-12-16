@@ -58,7 +58,7 @@ class Game:
     def isFinished(self):
         return self.gameState.outcome() is not None
 
-    def printGameConfig(self):
+    def printConfig(self):
         print('Game configuration:',
               f'Player color: {"White" if self.p_color == 1 else "Black"}',
               f'Player agent: {self.player.__name__}',
@@ -66,3 +66,14 @@ class Game:
               f'AI agent: {self.ai.__name__}',
               f'AI depth: {self.ai_depth}',
               sep='\n')
+
+    def printOutcome(self):
+        if not self.isFinished():
+            print('Game is not finished!')
+        else:
+            outcome = self.gameState.outcome()
+            print('Game is finished:',
+                  f'Reason: {outcome.termination}',
+                  sep='\n')
+            if hasattr(outcome, 'winner'):
+                print(f'Winner: {"White" if outcome.winner == True else "Black"}', )

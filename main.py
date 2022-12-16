@@ -19,14 +19,14 @@ def main(argv):
             ai_depth = arg
 
     game = chessGame.Game(player, ai, p_color, ai_depth)
-    game.printGameConfig()
+    game.printConfig()
 
     while not game.isFinished():
         print(game.gameState)
         game.nextMove()
         print('===============')
     print(game.gameState)
-    print(game.gameState.outcome())
+    game.printOutcome()
 
 
 if __name__ == "__main__":
