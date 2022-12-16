@@ -49,7 +49,7 @@ class ChessAgent:
         b_weight = 300
         r_weight = 500
         q_weight = 1000
-        k_weight = 30000
+        k_weight = 10000
 
         material_score = p_weight * (wp - bp) + n_weight * (wn - bn) + b_weight * (wb - bb) + r_weight * (wr - br) \
                          + q_weight * (wq - bq) + k_weight * (wk - bk)
@@ -234,7 +234,7 @@ class PvsChessAgent(ChessAgent):
         return pvs(gameState, color=color)
 
 
-class ConsoleAgent(ChessAgent):
+class ConsoleChessAgent(ChessAgent):
     def getAction(self, gameState: chess.Board):
         while True:
             try:

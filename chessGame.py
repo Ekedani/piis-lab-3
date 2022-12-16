@@ -3,7 +3,7 @@ import chessAgents
 
 
 class Game:
-    def __init__(self, player, ai, p_color):
+    def __init__(self, player, ai, p_color, ai_depth):
         # Creating new chess board
         self.gameState = chess.Board()
 
@@ -15,9 +15,9 @@ class Game:
         elif player == 'pvs':
             self.player = chessAgents.PvsChessAgent
         elif player == 'console':
-            self.player = chessAgents.ConsoleAgent
+            self.player = chessAgents.ConsoleChessAgent
         else:
-            self.player = chessAgents.ConsoleAgent
+            self.player = chessAgents.ConsoleChessAgent
 
         # Selecting AI agent
         if ai == 'negamax':
@@ -30,6 +30,13 @@ class Game:
             self.ai = chessAgents.NegamaxChessAgent
 
         self.p_color = p_color
+        self.p_depth = 2
+
+        if not ai_depth.isdigit() or not 0 < int(ai_depth) < 6:
+            print(f'AI depth {ai_depth} is not supported. Using depth 2 instead')
+            self.ai_depth = 2
+        else:
+            self.ai_depth = int(ai_depth)
 
     def nextMove(self):
         turn = self.gameState.turn
@@ -39,27 +46,23 @@ class Game:
             self.makeAiMove()
 
     def makeAiMove(self):
-        agent = self.ai(2)
+        agent = self.ai(self.ai_depth)
         action = agent.getAction(self.gameState.copy())
         self.gameState.push(action)
 
     def makePlayerMove(self):
-        agent = self.player(1)
+        agent = self.player(self.p_depth)
         action = agent.getAction(self.gameState.copy())
         self.gameState.push(action)
 
     def isFinished(self):
         return self.gameState.outcome() is not None
 
-
-player = 'console'
-ai = 'negamax'
-p_color = 1
-
-game = Game(player, ai, p_color)
-while not game.isFinished():
-    print(game.gameState)
-    game.nextMove()
-    print('===============')
-print(game.gameState)
-print(game.gameState.outcome())
+    def printGameConfig(self):
+        print('Game configuration:',
+              f'Player color: {"White" if self.p_color == 1 else "Black"}',
+              f'Player agent: {self.player.__name__}',
+              f'Player depth (not used in console agent): {self.p_depth}',
+              f'AI agent: {self.ai.__name__}',
+              f'AI depth: {self.ai_depth}',
+              sep='\n')
